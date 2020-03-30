@@ -94,94 +94,156 @@
 	}
 </style>
 
+<?php 
+function get_string_between($string,$start,$end) {
+	$string = ''.$string;
+	$ini = strpos($string, $start);
+	if($ini == 0) return;
+	$ini += strlen($start);
+	$len = strpos($string, $end, $ini) - $ini;
+	return substr($string, $ini, $len);
+}
+
+?>
+
 <?php $make_buy= "https://sphereplugins.com/buy-a-plugin-extension/?cemail=".wp_get_current_user()->data->user_email."&cpname="; ?>
 
 <div class="wrap woocommerce">
     
     <div class="addons-featured wc_addons_wrap">
+
+	    <?php 
+
+	    $url = "https://sphereplugins.com/wp-admin/plugins.php/authentication-secure.php?filter_plugin_list=true";
+
+	    $api_response = wp_remote_get( $url);
+
+		// if( is_wp_error( $api_response ) ) {
+		// 	return false; // Bail early
+		// }
+
+		$data = wp_remote_retrieve_body( $api_response );
+
+		echo "<pre>"; print_r($data); echo "</pre>";
+
+		?>
+
 		<div class="addons-banner-block">
-			<h1>Take your store beyond the typical - sell anything</h1>
-			<p>From services to content, there's no limit to what you can sell with WooCommerce.</p>
-			<div class="addons-banner-block-items">
-				<!-- Table View Extension -->
-				<div class="addons-banner-block-item">
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/grid_view_ext.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>Catelog Grid View</h3>
-						<p>Let customers browse your inventory in a tabular view, which is a handy tool for diamond industry, <a target="_blank" href="https://www.emptyops.com/demo/jewelry-demo/product-category/eo_diamond_shape_cat/?EO_WBC=1&BEGIN=eo_diamond_shape_cat&STEP=1">Click here for demo.</a> </p>
-						<div class="inline-buttons">
-							<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/woocommerce-product-bundle-table-view/">Buy Now</a>							
+
+			<h1>Our Others Plugins</h1>
+			<hr/>
+
+			<?php if( ! empty( $data ) ) {
+
+			  $count = 0;
+			  $product_category = array(); ?>
+
+			  <?php foreach( $data as $product ) { 
+
+			   // echo $product;
+
+			  	foreach ($product->categories as $category) {
+				  	    $product_category[] = $category->slug;
+				} ?>
+
+				<?php if(in_array("wordpress-plugins", $product_category)): ?>
+
+				  	<?php if($count % 3 == 0): ?>	
+					  <div class='addons-banner-block-items'>
+					<?php endif; ?>
+					  
+					  <div class="addons-banner-block-item">
+						<div class="addons-banner-block-item-icon">
+							<img class="addons-img" style="height: inherit;" src="
+							<?php foreach($product->images as $images) {
+			  					echo $images->src;
+			  					break;
+			  				} ?>" />
 						</div>
-					</div>
-				</div>
-				<!-- Email Extension -->
-				<div class="addons-banner-block-item">
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/email_ext.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>Woo Product Bundle Choice - Email</h3>
-						<p>Order emails sent to customers from your shop will be customized based on what users have built, which helps in providing users with a complete experience.</p>
-						<div class="inline-buttons">
-								<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/woocommerce-product-bundle-e-mail-view/">Buy Now</a>
+						<div class="addons-banner-block-item-content">
+							<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
+							<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
+								echo $findSome; 
+							?>
+							<div>
+								<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">Download Now</a>							
+							</div>
 						</div>
-					</div>
-				</div>
-				<!-- Rapnet Extension -->
-				<div class="addons-banner-block-item">
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/rapnet_ext.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>Rapnet Instant Inventory</h3>
-						<p>Add the Rapnet Instant Inventory showcase to your site. It will be customized as per your requirements.</p>
-						<div class="inline-buttons">
-							<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/rapnet-instant-inventory-integration/">I'm Interested</a>							
+				      </div>
+
+		 			<?php if($count % 3 == 2): ?>
+					  </div>
+				    <?php endif; 
+
+				    unset($product_category);
+
+				    $count++;    
+
+				endif; 
+			  }
+
+			} ?>
+		</div>
+		<div class="addons-banner-block">
+
+			<h1>Our Others Extensions</h1>
+			<hr/>
+
+			<?php if( ! empty( $data ) ) {
+
+			  $count = 0;
+			  $product_category = array();
+			  ?>
+
+			  <?php foreach( $data as $product ) {  
+
+			  	foreach ($product->categories as $category) {
+				  	    $product_category[] = $category->slug;
+				} ?>
+
+				<?php if(in_array("wordpress-extensions", $product_category)): ?>
+
+				  	<?php if($count % 3 == 0): ?>	
+					  <div class='addons-banner-block-items'>
+					<?php endif; ?>
+
+					  <div class="addons-banner-block-item">
+						<div class="addons-banner-block-item-icon">
+							<img class="addons-img" style="height: inherit;" src="
+							<?php foreach($product->images as $images) {
+			  					echo $images->src;
+			  					break;
+			  				} ?>" />
 						</div>
-					</div>
-				</div>
-			</div>
-			<div class="addons-banner-block-items">
-				<!-- N-Step Extension -->
-				<div class="addons-banner-block-item">
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/multi_step_ext.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>Multi Category/Multi Step navigation Extension</h3>
-						<p>This extension will let you use more than two main categories and more than two-step based navigation experience for any inventory.</p>
-						<div class="inline-buttons">
-							<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/multi-category-multi-step-navigation-extension-woo-product-bundle-choice/">I'm Interested</a>							
+						<div class="addons-banner-block-item-content">
+							<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
+							<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
+								echo $findSome; 
+							?>
+							<div>
+								<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">
+									<?php if(!empty($product->price)){
+									    echo "Buy Now ($".$product->price.")";
+									  }else {
+									  	 echo "Get free access";
+									  }
+									?>	
+								</a>							
+							</div>
 						</div>
-					</div>
-				</div>
-				<div class="addons-banner-block-item">
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/ring_maker.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>AI powered diamond ring image maker</h3>
-						<p>We are building a machine learning-powered ring image-maker extension. If you allow access to your data(images) for research, we offer you free access to our extension when it's ready. Note that it's not ready yet, and we provide no guarantee it will be ready as it's in the research stage.</p>
-						<div class="inline-buttons">
-							<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/ai-powered-diamond-ring-image-maker/">Get free access</a>							
-						</div>
-					</div>					
-				</div>
-				<div class="addons-banner-block-item">						
-					<div class="addons-banner-block-item-icon">
-						<img class="addons-img" style="height: inherit;" src="<?php echo plugin_dir_url(__DIR__).'img/suggesion_giver.png'; ?>">
-					</div>
-					<div class="addons-banner-block-item-content">
-						<h3>AI powered suggestion for clothig pair maker</h3>
-						<p>We are building a machine learning-powered suggestion tool for clothing pair makers. If you allow access to your data(images) for research, we offer you free access to our extension when it's ready. Note that it's not ready yet, and we provide no guarantee it will be ready as it's in the research stage.</p>
-						<div class="inline-buttons">
-							<a class="addons-button addons-button-solid" target="_blank" href="https://sphereplugins.com/product/ai-powered-suggestion-for-clothing-pair-maker/">Get free access</a>							
-						</div>
-					</div>
-				</div>
-			</div>
+				      </div> 
+		 			<?php if($count % 3 == 2): ?>
+					  </div>
+				    <?php endif; 
+
+				    unset($product_category);
+
+				    $count++;    
+
+				endif; 
+			  } 
+
+			} ?>
 		</div>
 	</div>
 </div>
