@@ -4,11 +4,11 @@
 * Plugin Name: Woocommerce Custom Filter Widget
 * Plugin URI: https://wordpress.org/plugins/woo-custom-filter-widget/
 * Description: A powerfull and easy tool to enable horizontal product filter bar at your e-commerce website.
-* Version: 0.0.4
+* Version: 0.0.5
 * Author: emptyopssphere
 * Author URI: https://profiles.wordpress.org/emptyopssphere
 * Requires at least: 3.5
-* Tested up to: 5.2.1
+* Tested up to: 5.4
 * License: GPLv3+
 * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 */
