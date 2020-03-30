@@ -95,6 +95,14 @@
 </style>
 
 <?php 
+
+//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+$this_plugin_slug = 'custom-filter-widget';
+//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+
 function get_string_between($string,$start,$end) {
 	$string = ''.$string;
 	$ini = strpos($string, $start);
@@ -114,136 +122,138 @@ function get_string_between($string,$start,$end) {
 
 	    <?php 
 
-	    $url = "https://sphereplugins.com/wp-admin/plugins.php/authentication-secure.php?filter_plugin_list=true";
-
-	    $api_response = wp_remote_get( $url);
+	    $url = "https://sphereplugins.com/?filter_plugin_list=1";
+	    $response = wp_remote_get( $url);
 
 		// if( is_wp_error( $api_response ) ) {
 		// 	return false; // Bail early
 		// }
-
-		$data = wp_remote_retrieve_body( $api_response );
-
-		echo "<pre>"; print_r($data); echo "</pre>";
-
+		if(!is_wp_error( $response ) and wp_remote_retrieve_response_code($response)==200 ) {
+			$response = json_decode(wp_remote_retrieve_body($response));			
+		} else {
+			$response = "";
+		}
+		if(!empty($response) and !is_wp_error($response) and is_array($response)) {
+			$data = $response;
 		?>
+			<div class="addons-banner-block">
 
-		<div class="addons-banner-block">
+				<h1>Our Others Plugins</h1>
+				<hr/>
 
-			<h1>Our Others Plugins</h1>
-			<hr/>
+				<?php if( ! empty( $data ) ) {
 
-			<?php if( ! empty( $data ) ) {
+				  $count = 0;
+				  $product_category = array(); ?>
 
-			  $count = 0;
-			  $product_category = array(); ?>
+				  <?php foreach( $data as $product ) { 
 
-			  <?php foreach( $data as $product ) { 
+				   // echo $product;
 
-			   // echo $product;
+				  	foreach ($product->categories as $category) {
+				  		if($product->slug == $this_plugin_slug){ continue; }
+					  	$product_category[] = $category->slug;
+				  		
+					} ?>
 
-			  	foreach ($product->categories as $category) {
-				  	    $product_category[] = $category->slug;
-				} ?>
-
-				<?php if(in_array("wordpress-plugins", $product_category)): ?>
-
-				  	<?php if($count % 3 == 0): ?>	
-					  <div class='addons-banner-block-items'>
-					<?php endif; ?>
-					  
-					  <div class="addons-banner-block-item">
-						<div class="addons-banner-block-item-icon">
-							<img class="addons-img" style="height: inherit;" src="
-							<?php foreach($product->images as $images) {
-			  					echo $images->src;
-			  					break;
-			  				} ?>" />
-						</div>
-						<div class="addons-banner-block-item-content">
-							<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
-							<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
-								echo $findSome; 
-							?>
-							<div>
-								<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">Download Now</a>							
+					<?php if(in_array("wordpress-plugins", $product_category)): ?>						
+					  	<?php if($count % 3 == 0): ?>	
+						  <div class='addons-banner-block-items'>
+						<?php endif; ?>
+						  
+						  <div class="addons-banner-block-item">
+							<div class="addons-banner-block-item-icon">
+								<img class="addons-img" style="height: inherit;" src="
+								<?php foreach($product->images as $images) {
+				  					echo $images->src;
+				  					break;
+				  				} ?>" />
 							</div>
-						</div>
-				      </div>
-
-		 			<?php if($count % 3 == 2): ?>
-					  </div>
-				    <?php endif; 
-
-				    unset($product_category);
-
-				    $count++;    
-
-				endif; 
-			  }
-
-			} ?>
-		</div>
-		<div class="addons-banner-block">
-
-			<h1>Our Others Extensions</h1>
-			<hr/>
-
-			<?php if( ! empty( $data ) ) {
-
-			  $count = 0;
-			  $product_category = array();
-			  ?>
-
-			  <?php foreach( $data as $product ) {  
-
-			  	foreach ($product->categories as $category) {
-				  	    $product_category[] = $category->slug;
-				} ?>
-
-				<?php if(in_array("wordpress-extensions", $product_category)): ?>
-
-				  	<?php if($count % 3 == 0): ?>	
-					  <div class='addons-banner-block-items'>
-					<?php endif; ?>
-
-					  <div class="addons-banner-block-item">
-						<div class="addons-banner-block-item-icon">
-							<img class="addons-img" style="height: inherit;" src="
-							<?php foreach($product->images as $images) {
-			  					echo $images->src;
-			  					break;
-			  				} ?>" />
-						</div>
-						<div class="addons-banner-block-item-content">
-							<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
-							<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
-								echo $findSome; 
-							?>
-							<div>
-								<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">
-									<?php if(!empty($product->price)){
-									    echo "Buy Now ($".$product->price.")";
-									  }else {
-									  	 echo "Get free access";
-									  }
-									?>	
-								</a>							
+							<div class="addons-banner-block-item-content">
+								<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
+								<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
+									echo $findSome; 
+								?>
+								<div>
+									<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">Download Now</a>							
+								</div>
 							</div>
-						</div>
-				      </div> 
-		 			<?php if($count % 3 == 2): ?>
-					  </div>
-				    <?php endif; 
+					      </div>
 
-				    unset($product_category);
+			 			<?php if($count % 3 == 2): ?>
+						  </div>
+					    <?php endif; 
 
-				    $count++;    
+					    unset($product_category);
 
-				endif; 
-			  } 
+					    $count++;    
 
-			} ?>
-		</div>
+					endif; 
+				  }
+
+				} ?>
+			</div>
+			<div class="addons-banner-block">
+
+				<h1>Our Others Extensions</h1>
+				<hr/>
+
+				<?php if( ! empty( $data ) ) {
+
+				  $count = 0;
+				  $product_category = array();
+				  ?>
+
+				  <?php foreach( $data as $product ) {  
+
+				  	foreach ($product->categories as $category) {
+					  	    $product_category[] = $category->slug;
+					} ?>
+
+					<?php if(in_array("wordpress-extensions", $product_category)): ?>
+
+					  	<?php if($count % 3 == 0): ?>	
+						  <div class='addons-banner-block-items'>
+						<?php endif; ?>
+
+						  <div class="addons-banner-block-item">
+							<div class="addons-banner-block-item-icon">
+								<img class="addons-img" style="height: inherit;" src="
+								<?php foreach($product->images as $images) {
+				  					echo $images->src;
+				  					break;
+				  				} ?>" />
+							</div>
+							<div class="addons-banner-block-item-content">
+								<h3 style="align-self: center;"><?php echo $product->name; ?></h3>
+								<?php $findSome = get_string_between($product->short_description, '<span>', '</span>');
+									echo $findSome; 
+								?>
+								<div>
+									<a class="addons-button addons-button-solid" target="_blank" href="<?php echo $product->permalink; ?>" style="margin-left:0 !important;">
+										<?php if(!empty($product->price)){
+										    echo "Buy Now ($".$product->price.")";
+										  }else {
+										  	 echo "Get free access";
+										  }
+										?>	
+									</a>							
+								</div>
+							</div>
+					      </div> 
+			 			<?php if($count % 3 == 2): ?>
+						  </div>
+					    <?php endif; 
+
+					    unset($product_category);
+
+					    $count++;    
+
+					endif; 
+				  } 
+
+				} ?>
+			</div>
+		<?php } ?>
 	</div>
 </div>
